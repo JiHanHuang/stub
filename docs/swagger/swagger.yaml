@@ -1,0 +1,325 @@
+definitions:
+  app.Response:
+    properties:
+      code:
+        type: integer
+      data:
+        type: object
+      msg:
+        type: string
+    type: object
+  gin.Context:
+    properties:
+      accepted:
+        items:
+          type: string
+        type: array
+      errors:
+        type: errorMsgs
+      keys:
+        additionalProperties: true
+        type: object
+      params:
+        type: Params
+      request:
+        type: string
+      writer:
+        type: ResponseWriter
+    type: object
+  set.SetResponseForm:
+    properties:
+      code:
+        example: 200
+        type: integer
+      contentType:
+        example: json
+        type: string
+      data:
+        example: your response data
+        type: string
+    type: object
+info:
+  contact: {}
+  description: An example of gin+vue
+  license: {}
+  termsOfService: https://github.com/JiHanHuang/stub
+  title: Golang Gin-VUE API
+  version: "1.0"
+paths:
+  /api/set/list:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.Response'
+      summary: 自定义返回列表
+      tags:
+      - Set
+  /api/set/response:
+    post:
+      parameters:
+      - description: 设自定义返回结构
+        in: body
+        name: setResponse
+        schema:
+          $ref: '#/definitions/set.SetResponseForm'
+      - default: set_response
+        description: 自定义返回名
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Response'
+      summary: 设置自定义返回
+      tags:
+      - Set
+  /api/tool/fingerprint:
+    post:
+      parameters:
+      - description: appkey
+        in: query
+        name: app_key
+        required: true
+        type: string
+      - default: '{"app_id":"xxxxx",...}'
+        description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Response'
+      summary: 获取数据
+      tags:
+      - Tool
+  /api/v1/data:
+    get:
+      parameters:
+      - description: 数据量(k)默认0k
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Response'
+      summary: 获取一定量的数据
+      tags:
+      - Test
+  /api/v1/delay:
+    get:
+      parameters:
+      - description: 延时时长(默认5s)
+        in: query
+        name: delay
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Response'
+      summary: 延时返回
+      tags:
+      - Test
+  /api/v1/download:
+    get:
+      parameters:
+      - description: file name
+        in: query
+        name: filename
+        required: true
+        type: string
+      summary: 下载文件
+      tags:
+      - Test
+  /api/v1/download2:
+    get:
+      parameters:
+      - description: file name
+        in: query
+        name: filename
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin.Context'
+      summary: 下载文件2
+      tags:
+      - Test
+  /api/v1/get:
+    get:
+      parameters:
+      - description: 自定义返回(可选)
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Response'
+      summary: 获取数据
+      tags:
+      - Test
+  /api/v1/geturl:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Response'
+      summary: get url信息获取
+      tags:
+      - Test
+  /api/v1/pdata:
+    get:
+      parameters:
+      - description: 数据量(0,1,10)默认0
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Response'
+      summary: 获取一定量的数据(并发)
+      tags:
+      - Test
+  /api/v1/post:
+    post:
+      parameters:
+      - default: '{"data":"helllo"}'
+        description: post
+        in: body
+        name: post
+        schema:
+          type: string
+      - description: 自定义返回(可选)
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Response'
+      summary: 上传数据
+      tags:
+      - Test
+  /api/v1/posturl:
+    post:
+      parameters:
+      - default: '{"data":"helllo"}'
+        description: Data
+        in: body
+        name: data
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Response'
+      summary: post url信息获取
+      tags:
+      - Test
+  /api/v1/show:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: get url信息获取
+      tags:
+      - Test
+  /api/v1/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: file
+        in: formData
+        name: file
+        required: true
+        type: file
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Response'
+      summary: 上传文件
+      tags:
+      - Test
+swagger: "2.0"
