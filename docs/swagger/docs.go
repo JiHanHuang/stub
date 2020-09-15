@@ -212,23 +212,6 @@ var doc = `{
                         "in": "query",
                         "required": true
                     }
-                ]
-            }
-        },
-        "/api/v1/download2": {
-            "get": {
-                "tags": [
-                    "Test"
-                ],
-                "summary": "下载文件2",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "file name",
-                        "name": "filename",
-                        "in": "query",
-                        "required": true
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -238,6 +221,23 @@ var doc = `{
                         }
                     }
                 }
+            }
+        },
+        "/api/v1/download2": {
+            "get": {
+                "tags": [
+                    "Test"
+                ],
+                "summary": "下载文件(不可靠)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "file name",
+                        "name": "filename",
+                        "in": "query",
+                        "required": true
+                    }
+                ]
             }
         },
         "/api/v1/get": {

@@ -131,11 +131,11 @@ func isJSON(s string) bool {
 }
 
 // @Tags Test
-// @Summary 下载文件2
+// @Summary 下载文件
 // @Param filename query string true "file name"
 // @Success 200 {object} gin.Context
-// @Router /api/v1/download2 [get]
-func DownFile2(c *gin.Context) {
+// @Router /api/v1/download [get]
+func DownFile(c *gin.Context) {
 	filename := c.DefaultQuery("filename", "")
 	c.Writer.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
 	c.Writer.Header().Add("Content-Type", "application/octet-stream")
@@ -143,10 +143,10 @@ func DownFile2(c *gin.Context) {
 }
 
 // @Tags Test
-// @Summary 下载文件
+// @Summary 下载文件(不可靠)
 // @Param filename query string true "file name"
-// @Router /api/v1/download [get]
-func DownFile(c *gin.Context) {
+// @Router /api/v1/download2 [get]
+func DownFile2(c *gin.Context) {
 	appG := app.Gin{C: c}
 	filename := c.Query("filename")
 	if filename == "" {
