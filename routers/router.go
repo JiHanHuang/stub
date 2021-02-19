@@ -1,6 +1,11 @@
 package routers
 
 import (
+	"errors"
+	"fmt"
+	"net"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 
 	_ "github.com/JiHanHuang/stub/docs/swagger"
@@ -32,6 +37,10 @@ func InitRouter() *gin.Engine {
 		r.HandleContext(c)
 		//c.Redirect(http.StatusMovedPermanently, "https://baidu.com")
 	})
+	addr, err := getServerIP()
+	if err != nil {
+		addr = err.Error()
+	}
 	r.GET("/hello", func(c *gin.Context) {
 		c.Header("Content-Type", "text/html; charset=utf-8")
 		c.String(200, `
@@ -42,8 +51,9 @@ func InitRouter() *gin.Engine {
 		document.write("<a href="+httphost+">接口介绍[HTTP]</a><br>");
 		</script>
 		<a href="/api/v1/websocket">websocket</a><br><br>
+		Server addr: %s<br>
 		<i>Version: %s</i>
-		`, setting.ServerSetting.HttpPort, "/docs/index.html", version.Version)
+		`, setting.ServerSetting.HttpPort, "/docs/index.html", addr, version.Version)
 	})
 
 	apiv1 := r.Group("/api/v1")
@@ -75,4 +85,26 @@ func InitRouter() *gin.Engine {
 	}
 
 	return r
+}
+
+func getServerIP() (string, error) {
+	addrs, err := net.InterfaceAddrs()
+
+	if err != nil {
+		return "", err
+	}
+	for _, address := range addrs {
+		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			ports := strconv.Itoa(setting.ServerSetting.HttpPort)
+			if setting.ServerSetting.HttpsEn {
+				ports = fmt.Sprintf("%s,%s", ports, strconv.Itoa(setting.ServerSetting.HttpsPort))
+			}
+			if ipnet.IP.To4() != nil {
+				return ipnet.IP.String() + ":" + ports, nil
+			}
+
+		}
+	}
+
+	return "", errors.New("Can not find the client ip address!")
 }

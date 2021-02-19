@@ -39,14 +39,16 @@ func main() {
 			Handler: routersInit,
 		}
 		if file.CheckNotExist("server.key") {
-			cmd := "openssl genrsa -out server.key 2048"
-			if _, err := util.Cmder(cmd); err != nil {
-				log.Fatal("[ERRO] ", err)
-				return
-			}
+			// cmd := "openssl genrsa -out server.key 2048"
+			// if _, err := util.Cmder(cmd); err != nil && err.Error() != "Generating RSA private key, 2048 bit long modulus" {
+			// 	log.Fatal("[ERRO] ", err)
+			// 	return
+			// }
+			log.Fatalf("[%s] Please run [openssl genrsa -out server.key 2048] to create server.key.",
+				logging.LevelFlags[logging.INFO])
 		}
 		if file.CheckNotExist("server.crt") {
-			log.Fatal("[%s] Please run [openssl req -new -x509 -key server.key -out server.crt -days 365] to create server.crt.",
+			log.Fatalf("[%s] Please run [openssl req -new -x509 -key server.key -out server.crt -days 365] to create server.crt.",
 				logging.LevelFlags[logging.INFO])
 		}
 		log.Printf("[%s] start https server listening %s", logging.LevelFlags[logging.INFO], portTLS)
