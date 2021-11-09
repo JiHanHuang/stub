@@ -115,6 +115,47 @@ paths:
       summary: 获取数据
       tags:
       - Tool
+  /api/v1/check:
+    get:
+      parameters:
+      - default: '{"data":"helllo"}'
+        description: post
+        in: body
+        name: post
+        schema:
+          type: string
+      - description: 自定义返回(可选)
+        in: query
+        name: "yes"
+        type: string
+      - description: 自定义返回(可选)
+        in: query
+        name: "no"
+        type: string
+      - description: 用户名
+        in: query
+        name: name
+        required: true
+        type: string
+      - description: 密码
+        in: query
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Response'
+      summary: 上传数据
+      tags:
+      - Test
   /api/v1/data:
     get:
       parameters:

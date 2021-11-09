@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -58,6 +59,42 @@ func Tpost(c *gin.Context) {
 		return
 	}
 	appG.ResponseExt(name)
+}
+
+// @Tags Test
+// @Summary 上传数据
+// @Produce  json
+// @Param post body string false "post" default({"data":"helllo"})
+// @Param yes query string false "自定义返回(可选)"
+// @Param no query string false "自定义返回(可选)"
+// @Param name query string true "用户名"
+// @Param password query string true "密码"
+// @Success 200 {object} app.Response
+// @Failure 500 {object} app.Response
+// @Router /api/v1/check [get]
+func Tcheck(c *gin.Context) {
+	appG := app.Gin{C: c}
+	yes := c.Query("yes")
+	no := c.Query("no")
+	name := c.Query("name")
+	password := c.Query("password")
+	if name == "" || password == "" {
+		appG.Response(http.StatusBadRequest, e.INVALID_PARAMS, nil)
+		return
+	}
+	if yes == "" {
+		yes = "yes"
+	}
+	if no == "" {
+		no = "no"
+	}
+	var key string
+	if base64.StdEncoding.EncodeToString([]byte(name)) == password {
+		key = yes
+	} else {
+		key = no
+	}
+	appG.C.String(http.StatusOK, "%s", key)
 }
 
 // @Tags Test

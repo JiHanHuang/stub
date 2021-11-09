@@ -60,6 +60,8 @@ func InitRouter() *gin.Engine {
 	//apiv1.Use(jwt.JWT())
 	{
 		//test
+		apiv1.POST("/check", v1.Tcheck)
+		apiv1.GET("/check", v1.Tcheck)
 		apiv1.POST("/post", v1.Tpost)
 		apiv1.GET("/get", v1.Tget)
 		apiv1.GET("/show/*any", v1.Show)
