@@ -65,6 +65,7 @@ func InitRouter() *gin.Engine {
 		apiv1.POST("/post", v1.Tpost)
 		apiv1.GET("/get", v1.Tget)
 		apiv1.GET("/show/*any", v1.Show)
+		apiv1.POST("/show/*any", v1.Show)
 		apiv1.GET("/geturl/*any", v1.TgetUrl)
 		apiv1.POST("/posturl/*any", v1.TpostUrl)
 		apiv1.GET("/download2", v1.DownFile2)

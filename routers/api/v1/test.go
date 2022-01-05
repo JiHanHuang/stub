@@ -72,6 +72,7 @@ func Tpost(c *gin.Context) {
 // @Success 200 {object} app.Response
 // @Failure 500 {object} app.Response
 // @Router /api/v1/check [get]
+// @Router /api/v1/check [post]
 func Tcheck(c *gin.Context) {
 	appG := app.Gin{C: c}
 	yes := c.Query("yes")
@@ -142,23 +143,22 @@ func TpostUrl(c *gin.Context) {
 // @Summary get url信息获取
 // @Success 200 string string
 // @Router /api/v1/show [get]
+// @Router /api/v1/show [post]
 func Show(c *gin.Context) {
 	appG := app.Gin{C: c}
-	data := make([]string, 0, 4)
+	var data strings.Builder
 	body, _ := ioutil.ReadAll(c.Request.Body)
+	data.WriteString(fmt.Sprintf("%s %s %s",
+		appG.C.Request.Method, appG.C.Request.RequestURI, appG.C.Request.Proto))
+	data.WriteString(fmt.Sprintf("<br> Host:%s", appG.C.Request.Host))
 	for k, v := range c.Request.Header {
-		data = append(data, fmt.Sprintf("%s:%v", k, v))
+		data.WriteString(fmt.Sprintf("<br> %s:%v", k, v))
 	}
-	data = append(data, "Body:"+string(body))
-	data = append(data, "Url:"+appG.C.Request.RequestURI)
-	data = append(data, "Content-Len:"+strconv.FormatInt(c.Request.ContentLength, 10))
-	d, err := json.MarshalIndent(data, "    ", "<br>")
-	if err != nil {
-		appG.Response(http.StatusInternalServerError, e.ERROR, err.Error())
-		return
-	}
+	data.WriteString(fmt.Sprintf("<br> Content-Len:%d", c.Request.ContentLength))
+	data.WriteString(fmt.Sprintf("<br><br> %s", string(body)))
+
 	appG.C.Header("Content-Type", "text/html; charset=utf-8")
-	appG.C.String(http.StatusOK, "<h4>%s</h4>", string(d))
+	appG.C.String(http.StatusOK, "<h4> %s </h4>", data.String())
 }
 
 func isJSON(s string) bool {

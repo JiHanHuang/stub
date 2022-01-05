@@ -133,7 +133,7 @@ var doc = `{
             }
         },
         "/api/v1/check": {
-            "get": {
+            "post": {
                 "produces": [
                     "application/json"
                 ],
@@ -469,7 +469,7 @@ var doc = `{
             }
         },
         "/api/v1/show": {
-            "get": {
+            "post": {
                 "tags": [
                     "Test"
                 ],

@@ -116,7 +116,7 @@ paths:
       tags:
       - Tool
   /api/v1/check:
-    get:
+    post:
       parameters:
       - default: '{"data":"helllo"}'
         description: post
@@ -332,7 +332,7 @@ paths:
       tags:
       - Test
   /api/v1/show:
-    get:
+    post:
       responses:
         "200":
           description: OK

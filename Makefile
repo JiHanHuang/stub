@@ -5,6 +5,9 @@ all: build
 build:
 	@go build -mod vendor -v .
 
+swag:
+	swag init -o ./docs/swagger/
+
 tool:
 	go vet ./...; true
 	gofmt -w .
