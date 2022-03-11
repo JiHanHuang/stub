@@ -22,9 +22,9 @@ func init() {
 	util.Setup()
 }
 
-// @title Golang Gin-VUE API
+// @title Golang Stub
 // @version 1.0
-// @description An example of gin+vue
+// @description A server using to test
 // @termsOfService https://github.com/JiHanHuang/stub
 
 func main() {

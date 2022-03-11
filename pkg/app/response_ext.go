@@ -1,6 +1,7 @@
 package app
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -13,6 +14,8 @@ import (
 var responseFileName = "set_response.ini"
 var responseFilePath = "runtime/app/"
 
+var fini *ini.File
+
 func SetResponseExtData(data interface{}, sectionName string) error {
 
 	f, er := file.MustOpen(responseFileName, responseFilePath)
@@ -20,9 +23,12 @@ func SetResponseExtData(data interface{}, sectionName string) error {
 		return er
 	}
 	f.Close()
-	fini, err := ini.Load(responseFilePath + responseFileName)
-	if err != nil {
-		return err
+	var err error
+	if fini == nil {
+		fini, err = ini.Load(responseFilePath + responseFileName)
+		if err != nil {
+			return err
+		}
 	}
 	section := fini.Section(sectionName)
 	err = section.ReflectFrom(data)
@@ -38,10 +44,13 @@ func SetResponseExtData(data interface{}, sectionName string) error {
 
 // Response setting gin.JSON
 func (g *Gin) ResponseExt(sectionName string) {
-	fini, err := ini.Load(responseFilePath + responseFileName)
-	if err != nil {
-		g.Response(http.StatusNotFound, e.INVALID_PARAMS, "Not set ext response")
-		return
+	var err error
+	if fini == nil {
+		fini, err = ini.Load(responseFilePath + responseFileName)
+		if err != nil {
+			g.Response(http.StatusNotFound, e.INVALID_PARAMS, "Not set ext response")
+			return
+		}
 	}
 	section, er := fini.GetSection(sectionName)
 	if er != nil {
@@ -49,19 +58,31 @@ func (g *Gin) ResponseExt(sectionName string) {
 		return
 	}
 	code := section.Key("Code").MustInt()
-	data := section.Key("Data").String()
-	ct := section.Key("ContentType").String()
-	g.C.Set("ContentType", ct)
-	g.C.String(code, data)
+	body := section.Key("Body").String()
+	ct := section.Key("Header").String()
+	var header map[string]string
+	err = json.Unmarshal([]byte(ct), &header)
+	if err != nil {
+		g.Response(http.StatusInternalServerError, e.ERROR, "json unmarshl failed")
+		return
+	}
+	logging.Debug("ResponseExt set header:", header)
+	for k, v := range header {
+		g.C.Header(k, v)
+	}
+	g.C.String(code, body)
 	return
 }
 
 // Response setting gin.JSON
 func ListResponseExtData() []string {
-	fini, err := ini.Load(responseFilePath + responseFileName)
-	if err != nil {
-		logging.Error("ListResponseExtData Err: ", err.Error())
-		return nil
+	var err error
+	if fini == nil {
+		fini, err = ini.Load(responseFilePath + responseFileName)
+		if err != nil {
+			logging.Error("ListResponseExtData Err: ", err.Error())
+			return nil
+		}
 	}
 	sections := fini.Sections()
 	var bodys []string
@@ -77,4 +98,25 @@ func ListResponseExtData() []string {
 		bodys = append(bodys, value)
 	}
 	return bodys
+}
+
+func DelResponseExtData(sectionName string) error {
+	f, er := file.MustOpen(responseFileName, responseFilePath)
+	if er != nil {
+		return er
+	}
+	f.Close()
+	var err error
+	if fini == nil {
+		fini, err = ini.Load(responseFilePath + responseFileName)
+		if err != nil {
+			return err
+		}
+	}
+	fini.DeleteSection(sectionName)
+	err = fini.SaveToIndent(responseFilePath+responseFileName, "\t")
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -12,12 +12,10 @@ import (
 	"github.com/JiHanHuang/stub/docs/version"
 	"github.com/JiHanHuang/stub/middleware/info"
 	"github.com/JiHanHuang/stub/pkg/setting"
+	admin "github.com/JiHanHuang/stub/routers/admin/v1"
+	api "github.com/JiHanHuang/stub/routers/api/v1"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
-
-	"github.com/JiHanHuang/stub/routers/api/set"
-	"github.com/JiHanHuang/stub/routers/api/tool"
-	v1 "github.com/JiHanHuang/stub/routers/api/v1"
 )
 
 // InitRouter initialize routing information
@@ -50,7 +48,7 @@ func InitRouter() *gin.Engine {
 		var httphost = "http://"+domain+":%d%s"
 		document.write("<a href="+httphost+">接口介绍[HTTP]</a><br>");
 		</script>
-		<a href="/api/v1/websocket">websocket</a><br><br>
+		<a href="/api/v1/ws/home">websocket</a><br><br>
 		Server addr: %s<br>
 		<i>Version: %s</i>
 		`, setting.ServerSetting.HttpPort, "/docs/index.html", addr, version.Version)
@@ -60,31 +58,40 @@ func InitRouter() *gin.Engine {
 	//apiv1.Use(jwt.JWT())
 	{
 		//test
-		apiv1.POST("/check", v1.Tcheck)
-		apiv1.GET("/check", v1.Tcheck)
-		apiv1.POST("/post", v1.Tpost)
-		apiv1.GET("/get", v1.Tget)
-		apiv1.GET("/show/*any", v1.Show)
-		apiv1.POST("/show/*any", v1.Show)
-		apiv1.GET("/geturl/*any", v1.TgetUrl)
-		apiv1.POST("/posturl/*any", v1.TpostUrl)
-		apiv1.GET("/download2", v1.DownFile2)
-		apiv1.GET("/download/*any", v1.DownFile)
-		apiv1.POST("/upload/", v1.UpFile)
-		apiv1.GET("/websocket", v1.Home)
-		apiv1.GET("/websocket/echo", v1.Echo)
-		apiv1.GET("/delay", v1.Delay)
-		apiv1.GET("/data", v1.Data)
-		apiv1.GET("/pdata", v1.PData)
+		apiv1.POST("/check/pass", api.CheckPass)
+		apiv1.GET("/check/pass", api.CheckPass)
+
+		apiv1.POST("/data/delay", api.DataDelay)
+		apiv1.GET("/data/delay", api.DataDelay)
+		apiv1.POST("/data/normal", api.DataNormal)
+		apiv1.GET("/data/normal", api.DataNormal)
+		apiv1.POST("/data/p", api.DataP)
+		apiv1.GET("/data/p", api.DataP)
+
+		apiv1.POST("/define/resp", api.DefineResp)
+		apiv1.GET("/define/resp", api.DefineResp)
+
+		apiv1.GET("/file/download/*any", api.FileDown)
+		apiv1.GET("/file/download2", api.FileDown2)
+		apiv1.POST("/file/upload", api.FileUp)
+		apiv1.DELETE("/file/del", api.FileDel)
+
+		apiv1.POST("/fingerprint", api.FingerPrint)
+
+		apiv1.POST("/show/base/*any", api.ShowBase)
+		apiv1.GET("/show/base/*any", api.ShowBase)
+		apiv1.POST("/show/url/*any", api.ShowUrl)
+		apiv1.GET("/show/url/*any", api.ShowUrl)
+
+		apiv1.GET("/ws/home", api.WSHome)
+		apiv1.GET("/ws/echo", api.WSEcho)
+
 	}
-	apiSet := r.Group("/api/set")
+	apiAdmin := r.Group("/admin/v1")
 	{
-		apiSet.POST("/response", set.SetResponse)
-		apiSet.GET("/list", set.GetResponse)
-	}
-	apiTool := r.Group("/api/tool")
-	{
-		apiTool.POST("/fingerprint", tool.FingerPrint)
+		apiAdmin.POST("/define/resp", admin.SetResponse)
+		apiAdmin.GET("/define/resp", admin.ListResponse)
+		apiAdmin.DELETE("/define/resp", admin.DelResponse)
 	}
 
 	return r

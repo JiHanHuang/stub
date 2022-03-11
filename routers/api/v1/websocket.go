@@ -15,7 +15,7 @@ import (
 
 var upgrader = websocket.Upgrader{} // use default options
 
-func Echo(c *gin.Context) {
+func WSEcho(c *gin.Context) {
 	client, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		log.Print("upgrade:", err)
@@ -37,16 +37,16 @@ func Echo(c *gin.Context) {
 	}
 }
 
-func Home(c *gin.Context) {
+func WSHome(c *gin.Context) {
 	logging.Debug("ws:", c.Request.URL.Host, c.Request.URL.Port(), "xxxx")
 	isHttps := false
 	if strings.Contains(c.Request.Host, strconv.Itoa(setting.ServerSetting.HttpsPort)) {
 		isHttps = true
 	}
 	if isHttps {
-		homeTemplate.Execute(c.Writer, "wss://"+c.Request.Host+"/api/v1/websocket/echo")
+		homeTemplate.Execute(c.Writer, "wss://"+c.Request.Host+"/api/v1/ws/echo")
 	} else {
-		homeTemplate.Execute(c.Writer, "ws://"+c.Request.Host+"/api/v1/websocket/echo")
+		homeTemplate.Execute(c.Writer, "ws://"+c.Request.Host+"/api/v1/ws/echo")
 	}
 }
 

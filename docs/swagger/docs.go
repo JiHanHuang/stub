@@ -26,13 +26,13 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/set/list": {
+        "/admin/v1/define/resp": {
             "get": {
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Set"
+                    "Admin"
                 ],
                 "summary": "自定义返回列表",
                 "responses": {
@@ -43,15 +43,13 @@ var doc = `{
                         }
                     }
                 }
-            }
-        },
-        "/api/set/response": {
+            },
             "post": {
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Set"
+                    "Admin"
                 ],
                 "summary": "设置自定义返回",
                 "parameters": [
@@ -86,17 +84,337 @@ var doc = `{
                         }
                     }
                 }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "删除自定义返回列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "set_response",
+                        "description": "自定义返回名",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/app.Response"
+                        }
+                    }
+                }
             }
         },
-        "/api/tool/fingerprint": {
+        "/api/v1/check/pass": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "API"
+                ],
+                "summary": "校验账号密码，若密码为账号的base64，则返回yes，否则返回no。支持自定义返回 [get|post]",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "匹配自定义返回(可选)",
+                        "name": "yes",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "不匹配自定义返回(可选)",
+                        "name": "no",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户名",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "密码",
+                        "name": "password",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/app.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/app.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/data/delay": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "API"
+                ],
+                "summary": "延时返回 [get|post]",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "延时时长(默认5s)",
+                        "name": "delay",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/app.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/app.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/data/normal": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "API"
+                ],
+                "summary": "获取一定量的数据 [get|post]",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "数据量(k)默认0k",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/app.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/app.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/data/p": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "API"
+                ],
+                "summary": "获取一定量的数据(并发) [get|post]",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "数据量(0,1,10)默认0",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/app.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/app.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/define/resp": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "API"
+                ],
+                "summary": "获取自定义返回数据 [get|post]",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "set_response",
+                        "description": "自定义返回(可选)",
+                        "name": "name",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/app.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/app.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/file/del": {
+            "delete": {
+                "tags": [
+                    "API"
+                ],
+                "summary": "删除上传文件 [delete]",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "file name",
+                        "name": "filename",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/app.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/app.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/file/download": {
+            "get": {
+                "tags": [
+                    "API"
+                ],
+                "summary": "下载文件(需要文件上传接口上传) [get]",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "file name",
+                        "name": "filename",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin.Context"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/file/download2": {
+            "get": {
+                "tags": [
+                    "API"
+                ],
+                "summary": "下载文件(不可靠)(需要文件上传接口上传) [get]",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "file name",
+                        "name": "filename",
+                        "in": "query",
+                        "required": true
+                    }
+                ]
+            }
+        },
+        "/api/v1/file/upload": {
+            "post": {
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "tags": [
+                    "API"
+                ],
+                "summary": "上传文件 [post]",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "file",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/app.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/app.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/fingerprint": {
             "post": {
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Tool"
+                    "API"
                 ],
-                "summary": "获取数据",
+                "summary": "获取数据 [post]",
                 "parameters": [
                     {
                         "type": "string",
@@ -132,348 +450,12 @@ var doc = `{
                 }
             }
         },
-        "/api/v1/check": {
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Test"
-                ],
-                "summary": "上传数据",
-                "parameters": [
-                    {
-                        "default": "{\"data\":\"helllo\"}",
-                        "description": "post",
-                        "name": "post",
-                        "in": "body",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "type": "string",
-                        "description": "自定义返回(可选)",
-                        "name": "yes",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "自定义返回(可选)",
-                        "name": "no",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "用户名",
-                        "name": "name",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "密码",
-                        "name": "password",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/data": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Test"
-                ],
-                "summary": "获取一定量的数据",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "数据量(k)默认0k",
-                        "name": "size",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/delay": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Test"
-                ],
-                "summary": "延时返回",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "延时时长(默认5s)",
-                        "name": "delay",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/download": {
+        "/api/v1/show/base": {
             "get": {
                 "tags": [
-                    "Test"
+                    "API"
                 ],
-                "summary": "下载文件",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "file name",
-                        "name": "filename",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/gin.Context"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/download2": {
-            "get": {
-                "tags": [
-                    "Test"
-                ],
-                "summary": "下载文件(不可靠)",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "file name",
-                        "name": "filename",
-                        "in": "query",
-                        "required": true
-                    }
-                ]
-            }
-        },
-        "/api/v1/get": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Test"
-                ],
-                "summary": "获取数据",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "自定义返回(可选)",
-                        "name": "name",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/geturl": {
-            "get": {
-                "tags": [
-                    "Test"
-                ],
-                "summary": "get url信息获取",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/pdata": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Test"
-                ],
-                "summary": "获取一定量的数据(并发)",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "数据量(0,1,10)默认0",
-                        "name": "size",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/post": {
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Test"
-                ],
-                "summary": "上传数据",
-                "parameters": [
-                    {
-                        "default": "{\"data\":\"helllo\"}",
-                        "description": "post",
-                        "name": "post",
-                        "in": "body",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "type": "string",
-                        "description": "自定义返回(可选)",
-                        "name": "name",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/posturl": {
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Test"
-                ],
-                "summary": "post url信息获取",
-                "parameters": [
-                    {
-                        "default": "{\"data\":\"helllo\"}",
-                        "description": "Data",
-                        "name": "data",
-                        "in": "body",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/app.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/show": {
-            "post": {
-                "tags": [
-                    "Test"
-                ],
-                "summary": "get url信息获取",
+                "summary": "请求该接口，打印出请求相关信息，更友好显示 [get|post]",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -484,24 +466,15 @@ var doc = `{
                 }
             }
         },
-        "/api/v1/upload": {
-            "post": {
-                "consumes": [
-                    "multipart/form-data"
+        "/api/v1/show/url": {
+            "get": {
+                "produces": [
+                    "application/json"
                 ],
                 "tags": [
-                    "Test"
+                    "API"
                 ],
-                "summary": "上传文件",
-                "parameters": [
-                    {
-                        "type": "file",
-                        "description": "file",
-                        "name": "file",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
+                "summary": "请求该接口，打印出请求相关信息 [get|post]",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -564,17 +537,17 @@ var doc = `{
         "set.SetResponseForm": {
             "type": "object",
             "properties": {
+                "body": {
+                    "type": "string",
+                    "example": "{\"data\":\"your response data\"}"
+                },
                 "code": {
                     "type": "integer",
                     "example": 200
                 },
-                "contentType": {
+                "header": {
                     "type": "string",
-                    "example": "json"
-                },
-                "data": {
-                    "type": "string",
-                    "example": "your response data"
+                    "example": "{\"content-type\":\"application/json\"}"
                 }
             }
         }
@@ -596,8 +569,8 @@ var SwaggerInfo = swaggerInfo{
 	Host:        "",
 	BasePath:    "",
 	Schemes:     []string{},
-	Title:       "Golang Gin-VUE API",
-	Description: "An example of gin+vue",
+	Title:       "Golang Stub",
+	Description: "A server using to test",
 }
 
 type s struct{}

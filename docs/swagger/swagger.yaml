@@ -28,25 +28,43 @@ definitions:
     type: object
   set.SetResponseForm:
     properties:
+      body:
+        example: '{"data":"your response data"}'
+        type: string
       code:
         example: 200
         type: integer
-      contentType:
-        example: json
-        type: string
-      data:
-        example: your response data
+      header:
+        example: '{"content-type":"application/json"}'
         type: string
     type: object
 info:
   contact: {}
-  description: An example of gin+vue
+  description: A server using to test
   license: {}
   termsOfService: https://github.com/JiHanHuang/stub
-  title: Golang Gin-VUE API
+  title: Golang Stub
   version: "1.0"
 paths:
-  /api/set/list:
+  /admin/v1/define/resp:
+    delete:
+      parameters:
+      - default: set_response
+        description: 自定义返回名
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.Response'
+      summary: 删除自定义返回列表
+      tags:
+      - Admin
     get:
       produces:
       - application/json
@@ -57,8 +75,7 @@ paths:
             $ref: '#/definitions/app.Response'
       summary: 自定义返回列表
       tags:
-      - Set
-  /api/set/response:
+      - Admin
     post:
       parameters:
       - description: 设自定义返回结构
@@ -85,8 +102,197 @@ paths:
             $ref: '#/definitions/app.Response'
       summary: 设置自定义返回
       tags:
-      - Set
-  /api/tool/fingerprint:
+      - Admin
+  /api/v1/check/pass:
+    get:
+      parameters:
+      - description: 匹配自定义返回(可选)
+        in: query
+        name: "yes"
+        type: string
+      - description: 不匹配自定义返回(可选)
+        in: query
+        name: "no"
+        type: string
+      - description: 用户名
+        in: query
+        name: name
+        required: true
+        type: string
+      - description: 密码
+        in: query
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Response'
+      summary: 校验账号密码，若密码为账号的base64，则返回yes，否则返回no。支持自定义返回 [get|post]
+      tags:
+      - API
+  /api/v1/data/delay:
+    get:
+      parameters:
+      - description: 延时时长(默认5s)
+        in: query
+        name: delay
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Response'
+      summary: 延时返回 [get|post]
+      tags:
+      - API
+  /api/v1/data/normal:
+    get:
+      parameters:
+      - description: 数据量(k)默认0k
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Response'
+      summary: 获取一定量的数据 [get|post]
+      tags:
+      - API
+  /api/v1/data/p:
+    get:
+      parameters:
+      - description: 数据量(0,1,10)默认0
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Response'
+      summary: 获取一定量的数据(并发) [get|post]
+      tags:
+      - API
+  /api/v1/define/resp:
+    get:
+      parameters:
+      - default: set_response
+        description: 自定义返回(可选)
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Response'
+      summary: 获取自定义返回数据 [get|post]
+      tags:
+      - API
+  /api/v1/file/del:
+    delete:
+      parameters:
+      - description: file name
+        in: query
+        name: filename
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Response'
+      summary: 删除上传文件 [delete]
+      tags:
+      - API
+  /api/v1/file/download:
+    get:
+      parameters:
+      - description: file name
+        in: query
+        name: filename
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin.Context'
+      summary: 下载文件(需要文件上传接口上传) [get]
+      tags:
+      - API
+  /api/v1/file/download2:
+    get:
+      parameters:
+      - description: file name
+        in: query
+        name: filename
+        required: true
+        type: string
+      summary: 下载文件(不可靠)(需要文件上传接口上传) [get]
+      tags:
+      - API
+  /api/v1/file/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: file
+        in: formData
+        name: file
+        required: true
+        type: file
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Response'
+      summary: 上传文件 [post]
+      tags:
+      - API
+  /api/v1/fingerprint:
     post:
       parameters:
       - description: appkey
@@ -112,245 +318,23 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/app.Response'
-      summary: 获取数据
+      summary: 获取数据 [post]
       tags:
-      - Tool
-  /api/v1/check:
-    post:
-      parameters:
-      - default: '{"data":"helllo"}'
-        description: post
-        in: body
-        name: post
-        schema:
-          type: string
-      - description: 自定义返回(可选)
-        in: query
-        name: "yes"
-        type: string
-      - description: 自定义返回(可选)
-        in: query
-        name: "no"
-        type: string
-      - description: 用户名
-        in: query
-        name: name
-        required: true
-        type: string
-      - description: 密码
-        in: query
-        name: password
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/app.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/app.Response'
-      summary: 上传数据
-      tags:
-      - Test
-  /api/v1/data:
+      - API
+  /api/v1/show/base:
     get:
-      parameters:
-      - description: 数据量(k)默认0k
-        in: query
-        name: size
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/app.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/app.Response'
-      summary: 获取一定量的数据
-      tags:
-      - Test
-  /api/v1/delay:
-    get:
-      parameters:
-      - description: 延时时长(默认5s)
-        in: query
-        name: delay
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/app.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/app.Response'
-      summary: 延时返回
-      tags:
-      - Test
-  /api/v1/download:
-    get:
-      parameters:
-      - description: file name
-        in: query
-        name: filename
-        required: true
-        type: string
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/gin.Context'
-      summary: 下载文件
-      tags:
-      - Test
-  /api/v1/download2:
-    get:
-      parameters:
-      - description: file name
-        in: query
-        name: filename
-        required: true
-        type: string
-      summary: 下载文件(不可靠)
-      tags:
-      - Test
-  /api/v1/get:
-    get:
-      parameters:
-      - description: 自定义返回(可选)
-        in: query
-        name: name
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/app.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/app.Response'
-      summary: 获取数据
-      tags:
-      - Test
-  /api/v1/geturl:
-    get:
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/app.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/app.Response'
-      summary: get url信息获取
-      tags:
-      - Test
-  /api/v1/pdata:
-    get:
-      parameters:
-      - description: 数据量(0,1,10)默认0
-        in: query
-        name: size
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/app.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/app.Response'
-      summary: 获取一定量的数据(并发)
-      tags:
-      - Test
-  /api/v1/post:
-    post:
-      parameters:
-      - default: '{"data":"helllo"}'
-        description: post
-        in: body
-        name: post
-        schema:
-          type: string
-      - description: 自定义返回(可选)
-        in: query
-        name: name
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/app.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/app.Response'
-      summary: 上传数据
-      tags:
-      - Test
-  /api/v1/posturl:
-    post:
-      parameters:
-      - default: '{"data":"helllo"}'
-        description: Data
-        in: body
-        name: data
-        schema:
-          type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/app.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/app.Response'
-      summary: post url信息获取
-      tags:
-      - Test
-  /api/v1/show:
-    post:
       responses:
         "200":
           description: OK
           schema:
             type: string
-      summary: get url信息获取
+      summary: 请求该接口，打印出请求相关信息，更友好显示 [get|post]
       tags:
-      - Test
-  /api/v1/upload:
-    post:
-      consumes:
-      - multipart/form-data
-      parameters:
-      - description: file
-        in: formData
-        name: file
-        required: true
-        type: file
+      - API
+  /api/v1/show/url:
+    get:
+      produces:
+      - application/json
       responses:
         "200":
           description: OK
@@ -360,7 +344,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/app.Response'
-      summary: 上传文件
+      summary: 请求该接口，打印出请求相关信息 [get|post]
       tags:
-      - Test
+      - API
 swagger: "2.0"

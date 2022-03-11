@@ -1,4 +1,4 @@
-package tool
+package v1
 
 import (
 	"crypto/sha1"
@@ -16,14 +16,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// @Tags Tool
-// @Summary 获取数据
+// @Tags API
+// @Summary 获取数据 [post]
 // @Produce  json
 // @Param app_key query string true "appkey"
 // @Param data body string true "data" default({"app_id":"xxxxx",...})
 // @Success 200 {object} app.Response
 // @Failure 500 {object} app.Response
-// @Router /api/tool/fingerprint [post]
+// @Router /api/v1/fingerprint [post]
 func FingerPrint(c *gin.Context) {
 	appG := app.Gin{C: c}
 	appKey := c.Query("app_key")
