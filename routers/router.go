@@ -70,6 +70,7 @@ func InitRouter() *gin.Engine {
 
 		apiv1.POST("/define/resp", api.DefineResp)
 		apiv1.GET("/define/resp", api.DefineResp)
+		apiv1.GET("/define/file", api.DefineRespFile)
 
 		apiv1.GET("/file/download/*any", api.FileDown)
 		apiv1.GET("/file/download2", api.FileDown2)
@@ -90,6 +91,7 @@ func InitRouter() *gin.Engine {
 	apiAdmin := r.Group("/admin/v1")
 	{
 		apiAdmin.POST("/define/resp", admin.SetResponse)
+		apiAdmin.POST("/define/file", admin.SetResponseFile)
 		apiAdmin.GET("/define/resp", admin.ListResponse)
 		apiAdmin.DELETE("/define/resp", admin.DelResponse)
 	}

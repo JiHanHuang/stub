@@ -46,6 +46,40 @@ info:
   title: Golang Stub
   version: "1.0"
 paths:
+  /admin/v1/define/file:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: file
+        in: formData
+        name: file
+        required: true
+        type: file
+      - default: file_response
+        description: 自定义返回名
+        in: query
+        name: name
+        required: true
+        type: string
+      - default: 200
+        description: 自定义http status
+        in: query
+        name: code
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Response'
+      summary: 设置自定义文件返回
+      tags:
+      - Admin
   /admin/v1/define/resp:
     delete:
       parameters:
@@ -199,6 +233,28 @@ paths:
           schema:
             $ref: '#/definitions/app.Response'
       summary: 获取一定量的数据(并发) [get|post]
+      tags:
+      - API
+  /api/v1/define/file:
+    get:
+      parameters:
+      - default: file_response
+        description: 自定义返回(可选)
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Response'
+      summary: 获取自定义返回数据 [get|post]
       tags:
       - API
   /api/v1/define/resp:

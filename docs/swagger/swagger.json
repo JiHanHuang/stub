@@ -9,6 +9,56 @@
         "version": "1.0"
     },
     "paths": {
+        "/admin/v1/define/file": {
+            "post": {
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "设置自定义文件返回",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "file",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "file_response",
+                        "description": "自定义返回名",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 200,
+                        "description": "自定义http status",
+                        "name": "code",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/app.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/app.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/v1/define/resp": {
             "get": {
                 "produces": [
@@ -229,6 +279,40 @@
                         "type": "integer",
                         "description": "数据量(0,1,10)默认0",
                         "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/app.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/app.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/define/file": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "API"
+                ],
+                "summary": "获取自定义返回数据 [get|post]",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "file_response",
+                        "description": "自定义返回(可选)",
+                        "name": "name",
                         "in": "query"
                     }
                 ],

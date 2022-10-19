@@ -2,19 +2,23 @@ package set
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
+	"os"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 
 	"github.com/JiHanHuang/stub/pkg/app"
 	"github.com/JiHanHuang/stub/pkg/e"
+	"github.com/JiHanHuang/stub/pkg/file"
 	"github.com/JiHanHuang/stub/pkg/logging"
 )
 
 type SetResponseForm struct {
 	Code   int    `form:"code" example:"200"`
 	Header string `form:"header" example:"{\"content-type\":\"application/json\"}"`
-	Body   string `form:"Body" example:"{\"data\":\"your response data\"}" valid:"Required"`
+	Body   string `form:"Body" example:"{\"data\":\"your response data\"}"`
 }
 
 // @Tags Admin
@@ -58,6 +62,71 @@ func SetResponse(c *gin.Context) {
 	appG.Response(http.StatusOK, e.SUCCESS, nil)
 }
 
+type SetResponseFileData struct {
+	Code     int    `form:"code" example:"200"`
+	FileName string `form:"file_name" example:"file_response.html"`
+}
+
+// @Tags Admin
+// @Summary 设置自定义文件返回
+// @Accept multipart/form-data
+// @Param file formData file true "file"
+// @Param name query string true "自定义返回名" default(file_response)
+// @Param code query int true "自定义http status" default(200)
+// @Success 200 {object} app.Response
+// @Failure 500 {object} app.Response
+// @Router /admin/v1/define/file [post]
+func SetResponseFile(c *gin.Context) {
+	appG := app.Gin{C: c}
+
+	f, header, err := c.Request.FormFile("file")
+	if err != nil {
+		appG.Response(http.StatusInternalServerError, e.ERROR, err.Error())
+		return
+	}
+	filename := header.Filename
+	sectionName := c.Query("name")
+	if sectionName == "" {
+		appG.Response(http.StatusBadRequest, e.ERROR, "name parameter needed.")
+		return
+	}
+	code, err := strconv.Atoi(c.Query("code"))
+	if err != nil {
+		appG.Response(http.StatusBadRequest, e.ERROR, err.Error())
+		return
+	}
+
+	if err := file.IsNotExistMkDir(app.SaveFilesPath); err != nil {
+		appG.Response(http.StatusInternalServerError, e.ERROR, err.Error())
+		return
+	}
+
+	newFile, err := os.Create(app.SaveFilesPath + filename)
+	if err != nil {
+		appG.Response(http.StatusInternalServerError, e.ERROR, err.Error())
+		return
+	}
+	defer newFile.Close()
+
+	_, err = io.Copy(newFile, f)
+	if err != nil {
+		appG.Response(http.StatusInternalServerError, e.ERROR, err.Error())
+		return
+	}
+
+	form := SetResponseFileData{
+		Code:     code,
+		FileName: filename,
+	}
+
+	if err := app.SetResponseExtData(&form, sectionName); err != nil {
+		appG.Response(http.StatusInternalServerError, e.ERROR, err.Error())
+		return
+	}
+
+	appG.Response(http.StatusOK, e.SUCCESS, nil)
+}
+
 // @Tags Admin
 // @Summary 自定义返回列表
 // @Produce  json
@@ -83,10 +152,20 @@ func DelResponse(c *gin.Context) {
 		appG.Response(http.StatusBadRequest, e.ERROR, "name parameter needed.")
 		return
 	}
-	err := app.DelResponseExtData(sectionName)
+	section, err := app.DelResponseExtData(sectionName)
 	if err != nil {
 		appG.Response(http.StatusBadRequest, e.ERROR, err.Error())
 		return
+	}
+	if section.HasKey("FileName") {
+		filename := section.Key("FileName").String()
+		if !file.CheckNotExist(app.SaveFilesPath + filename) {
+			err = os.Remove(app.SaveFilesPath + filename)
+			if err != nil {
+				appG.Response(http.StatusInternalServerError, e.ERROR, err.Error())
+				return
+			}
+		}
 	}
 	appG.Response(http.StatusOK, e.SUCCESS, nil)
 	return

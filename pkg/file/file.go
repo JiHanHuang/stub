@@ -20,7 +20,7 @@ func GetExt(fileName string) string {
 	return path.Ext(fileName)
 }
 
-// CheckNotExist check if the file exists
+// CheckNotExist return true if the file not exists
 func CheckNotExist(src string) bool {
 	_, err := os.Stat(src)
 

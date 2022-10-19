@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/JiHanHuang/stub/pkg/e"
 	"github.com/JiHanHuang/stub/pkg/file"
@@ -13,6 +14,7 @@ import (
 
 var responseFileName = "set_response.ini"
 var responseFilePath = "runtime/app/"
+var SaveFilesPath = "runtime/app/up_files/"
 
 var fini *ini.File
 
@@ -30,6 +32,7 @@ func SetResponseExtData(data interface{}, sectionName string) error {
 			return err
 		}
 	}
+	fini.DeleteSection(sectionName)
 	section := fini.Section(sectionName)
 	err = section.ReflectFrom(data)
 	if err != nil {
@@ -40,6 +43,41 @@ func SetResponseExtData(data interface{}, sectionName string) error {
 		return err
 	}
 	return nil
+}
+
+// Response setting gin.JSON
+func (g *Gin) ResponseFile(sectionName string) {
+	var err error
+	if fini == nil {
+		fini, err = ini.Load(responseFilePath + responseFileName)
+		if err != nil {
+			g.Response(http.StatusNotFound, e.INVALID_PARAMS, "Not set ext response")
+			return
+		}
+	}
+	section, er := fini.GetSection(sectionName)
+	if er != nil {
+		g.Response(http.StatusNotFound, e.INVALID_PARAMS, "Not find the name in ext response")
+		return
+	}
+	if !section.HasKey("FileName") {
+		g.Response(http.StatusNotFound, e.INVALID_PARAMS, "Not find the file name in ext response")
+		return
+	}
+	code := section.Key("Code").MustInt()
+	fileName := section.Key("FileName").String()
+	if file.CheckNotExist(SaveFilesPath + fileName) {
+		g.Response(http.StatusNotFound, e.INVALID_PARAMS, "Not find the file:"+fileName)
+		return
+	}
+	body, err := os.ReadFile(SaveFilesPath + fileName)
+	if err != nil {
+		g.Response(http.StatusInternalServerError, e.ERROR, err.Error())
+		return
+	}
+	g.C.Header("Content-Type", "text/html; charset=utf-8")
+	g.C.String(code, string(body))
+	return
 }
 
 // Response setting gin.JSON
@@ -100,23 +138,28 @@ func ListResponseExtData() []string {
 	return bodys
 }
 
-func DelResponseExtData(sectionName string) error {
+func DelResponseExtData(sectionName string) (*ini.Section, error) {
 	f, er := file.MustOpen(responseFileName, responseFilePath)
 	if er != nil {
-		return er
+		return nil, er
 	}
 	f.Close()
 	var err error
 	if fini == nil {
 		fini, err = ini.Load(responseFilePath + responseFileName)
 		if err != nil {
-			return err
+			return nil, err
 		}
+	}
+	var sec *ini.Section
+	sec, err = fini.GetSection(sectionName)
+	if err != nil {
+		return nil, err
 	}
 	fini.DeleteSection(sectionName)
 	err = fini.SaveToIndent(responseFilePath+responseFileName, "\t")
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return sec, nil
 }
